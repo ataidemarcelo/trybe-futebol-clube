@@ -16,8 +16,6 @@ class AuthService {
   public async authenticateUser({ email, password }: UserLogin): Promise<Token> {
     const user = await this.model.getByEmail(email);
 
-    // corrigir msgs
-    // criar classe de Erros com statusCode
     if (!user) {
       throw new AnauthorizedException('Incorrect email or password');
     }

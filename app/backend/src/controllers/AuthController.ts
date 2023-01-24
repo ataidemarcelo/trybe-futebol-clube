@@ -2,18 +2,20 @@ import { Request, Response } from 'express';
 
 import AuthService from '../services/AuthService';
 import { UserLogin } from '../interfaces';
+import JoiValidation from '../services/validations/JoiValidation';
 
 class AuthController {
   private service: AuthService;
+  private validation: JoiValidation<UserLogin>;
 
-  constructor(service: AuthService) {
+  constructor(service: AuthService, validation: JoiValidation<UserLogin>) {
     this.service = service;
+    this.validation = validation;
   }
 
   public login = async (req: Request, res: Response) => {
-    const { email, password }: UserLogin = req.body;
-    // fazer a validação dos dados da requisição
-    // ...
+    const requestData: UserLogin = req.body;
+    const { email, password } = this.validation.validate(requestData);
 
     const token = await this.service.authenticateUser({ email, password });
 
