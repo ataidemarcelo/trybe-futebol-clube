@@ -2,7 +2,7 @@ import { IUser } from '../interfaces';
 import User from '../database/models/User';
 import { InternalServerErrorException } from '../exceptions';
 
-class AuthModel {
+class AuthSequelizeModel {
   private user: IUser = Object();
 
   public async getByEmail(email: string): Promise<IUser> {
@@ -18,4 +18,4 @@ class AuthModel {
   }
 }
 
-export default AuthModel;
+export default AuthSequelizeModel;
