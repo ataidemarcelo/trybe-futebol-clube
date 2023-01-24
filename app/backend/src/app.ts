@@ -1,5 +1,7 @@
 import * as express from 'express';
 
+import routers from './routes/routers';
+
 class App {
   public app: express.Express;
 
@@ -7,9 +9,10 @@ class App {
     this.app = express();
 
     this.config();
+    this.app.use(routers);
 
     // Não remover essa rota!!!
-    this.app.get('/', (req, res) => res.json({ ok: true }));
+    this.app.get('/', (_req, res) => res.json({ ok: true }));
   }
 
   private config():void {

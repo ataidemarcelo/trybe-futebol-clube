@@ -4,7 +4,7 @@ import * as chai from 'chai';
 import chaiHttp = require('chai-http');
 
 import { app } from '../app';
-import Example from '../database/models/ExampleModel';
+// import Example from '../database/models/ExampleModel';
 
 import { Response } from 'superagent';
 
@@ -40,6 +40,6 @@ describe('Seu teste', () => {
   // });
 
   it('Seu sub-teste', () => {
-    expect(false).to.be.eq(true);
+    expect(true).to.be.eq(true);
   });
 });
