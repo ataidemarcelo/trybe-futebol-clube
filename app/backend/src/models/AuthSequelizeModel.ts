@@ -1,5 +1,6 @@
 import { IUser } from '../interfaces';
 import User from '../database/models/User';
+import { InternalServerErrorException } from '../exceptions';
 
 class AuthModel {
   private user: IUser = Object();
@@ -8,7 +9,7 @@ class AuthModel {
     const user = await User.findOne({ where: { email }, raw: true });
 
     if (!user) {
-      throw new Error('Internal server error');
+      throw new InternalServerErrorException('Internal server error');
     }
 
     this.user = user;

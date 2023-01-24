@@ -1,5 +1,6 @@
 import AuthModel from '../models/AuthSequelizeModel';
 import { UserLogin } from '../interfaces';
+import { AnauthorizedException } from '../exceptions';
 
 type Token = {
   token: string;
@@ -18,12 +19,12 @@ class AuthService {
     // corrigir msgs
     // criar classe de Erros com statusCode
     if (!user) {
-      throw new Error('User invalid');
+      throw new AnauthorizedException('Incorrect email or password');
     }
 
     // usar o bcryptJS ...
     if (user.password !== password) {
-      throw new Error('Password invalid');
+      throw new AnauthorizedException('Incorrect email or password');
     }
 
     // gerar o token JWT
