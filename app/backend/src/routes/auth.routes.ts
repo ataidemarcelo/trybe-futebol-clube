@@ -20,5 +20,6 @@ const validation = new JoiValidation<UserLogin>(userLoginSchema);
 const authController = new AuthController(authService, validation);
 
 router.post('/', authController.login);
+router.get('/validate', authController.validateLogin);
 
 export default router;

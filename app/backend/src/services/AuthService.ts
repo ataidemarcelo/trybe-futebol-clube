@@ -1,5 +1,5 @@
 import { compare } from 'bcryptjs';
-import { sign } from 'jsonwebtoken';
+import { JwtPayload, sign, verify } from 'jsonwebtoken';
 
 import { jwtSecret, jwtConfig } from '../utils/jwt.config';
 import AuthModel from '../models/AuthSequelizeModel';
@@ -12,6 +12,7 @@ type Token = {
 
 class AuthService {
   private model: AuthModel;
+  private payload: string | JwtPayload = String();
 
   constructor(model: AuthModel) {
     this.model = model;
@@ -29,11 +30,17 @@ class AuthService {
       throw new AnauthorizedException('Incorrect email or password');
     }
 
-    const { username: name, id: userId } = user;
+    const { role } = user;
 
-    const token = sign({ name, userId }, jwtSecret.secret, jwtConfig);
+    const token = sign({ sub: role }, jwtSecret.secret, jwtConfig);
 
     return { token };
+  }
+
+  public async validateLogin(token: string) {
+    this.payload = verify(token, jwtSecret.secret);
+
+    return this.payload;
   }
 }
 

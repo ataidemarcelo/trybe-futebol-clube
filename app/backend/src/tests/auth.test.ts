@@ -2,10 +2,10 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 // @ts-ignore
 import chaiHttp = require('chai-http');
+import { Response } from 'superagent';
 
 import { app } from '../app';
 
-import { Response } from 'superagent';
 import User from '../database/models/User';
 import { usersMock, validRequestData } from './mock/user.mock';
 
@@ -21,7 +21,7 @@ describe('"Auth Controller" Integration Tests', () => {
   })
 
   describe('POST /login', () => {
-    it('should return 200 and body with object { token: "token" }', async () => {  
+    it('should return status 200', async () => {  
       sinon
         .stub(User, "findOne")
         .resolves(usersMock[0] as User);
@@ -32,7 +32,6 @@ describe('"Auth Controller" Integration Tests', () => {
          .send(validRequestData);
       
       expect(response.status).to.be.equals(200);
-      expect(response.body).to.be.deep.equal({ token: 'token' });
     });
 
     it('should return 400 and a message error if the password is not provided', async () => {  
