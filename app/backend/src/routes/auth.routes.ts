@@ -11,7 +11,7 @@ const router: Router = Router();
 
 const userLoginSchema = Joi.object<UserLogin>({
   email: Joi.string().email().required(),
-  password: Joi.string().required(),
+  password: Joi.string().min(6).required(),
 });
 
 const authModel = new AuthSequelizeModel();

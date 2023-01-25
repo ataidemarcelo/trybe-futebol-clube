@@ -1,6 +1,6 @@
 import { IUser } from '../interfaces';
 import User from '../database/models/User';
-import { InternalServerErrorException } from '../exceptions';
+import { AnauthorizedException } from '../exceptions';
 
 class AuthSequelizeModel {
   private user: IUser = Object();
@@ -9,7 +9,7 @@ class AuthSequelizeModel {
     const user = await User.findOne({ where: { email }, raw: true });
 
     if (!user) {
-      throw new InternalServerErrorException('Internal server error');
+      throw new AnauthorizedException('Incorrect email or password');
     }
 
     this.user = user;

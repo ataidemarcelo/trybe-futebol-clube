@@ -1,3 +1,5 @@
+import { compare } from 'bcryptjs';
+
 import AuthModel from '../models/AuthSequelizeModel';
 import { UserLogin } from '../interfaces';
 import { AnauthorizedException } from '../exceptions';
@@ -20,8 +22,8 @@ class AuthService {
       throw new AnauthorizedException('Incorrect email or password');
     }
 
-    // usar o bcryptJS ...
-    if (user.password !== password) {
+    const isValidPassword = await compare(password, user.password);
+    if (!isValidPassword) {
       throw new AnauthorizedException('Incorrect email or password');
     }
 
