@@ -12,6 +12,12 @@ class TeamService {
 
     return teams;
   }
+
+  public async getById(id: number) {
+    const team = await this.model.getById(id);
+
+    return team;
+  }
 }
 
 export default TeamService;
