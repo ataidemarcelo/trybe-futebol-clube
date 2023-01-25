@@ -1,5 +1,7 @@
 import { compare } from 'bcryptjs';
+import { sign } from 'jsonwebtoken';
 
+import { jwtSecret, jwtConfig } from '../utils/jwt.config';
 import AuthModel from '../models/AuthSequelizeModel';
 import { UserLogin } from '../interfaces';
 import { AnauthorizedException } from '../exceptions';
@@ -27,10 +29,11 @@ class AuthService {
       throw new AnauthorizedException('Incorrect email or password');
     }
 
-    // gerar o token JWT
-    // ...
+    const { username: name, id: userId } = user;
 
-    return { token: 'token' };
+    const token = sign({ name, userId }, jwtSecret.secret, jwtConfig);
+
+    return { token };
   }
 }
 
