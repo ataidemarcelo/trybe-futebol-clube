@@ -2,7 +2,7 @@ import { compare } from 'bcryptjs';
 import { JwtPayload, sign, verify } from 'jsonwebtoken';
 
 import { jwtSecret, jwtConfig } from '../utils/jwt.config';
-import AuthModel from '../models/AuthSequelizeModel';
+import AuthModel from '../models/AuthModel';
 import { UserLogin } from '../interfaces';
 import { AnauthorizedException } from '../exceptions';
 
