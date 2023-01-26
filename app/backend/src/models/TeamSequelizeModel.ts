@@ -1,7 +1,7 @@
-import { ITeam } from '../interfaces';
 import Team from '../database/models/Team';
-import { InternalServerErrorException } from '../exceptions';
+import { ITeam } from '../interfaces';
 import { IModel } from './interfaces/IModel';
+import { NotFoundException } from '../exceptions';
 
 class TeamSequelizeModel implements IModel<ITeam> {
   private teams = Object();
@@ -10,9 +10,7 @@ class TeamSequelizeModel implements IModel<ITeam> {
   public async getAll() {
     const teams = await Team.findAll();
 
-    if (!teams) {
-      throw new InternalServerErrorException();
-    }
+    if (!teams) throw new NotFoundException('team not found.');
 
     this.teams = teams;
 
@@ -22,9 +20,7 @@ class TeamSequelizeModel implements IModel<ITeam> {
   public async getById(id: number) {
     const team = await Team.findOne({ where: { id } });
 
-    if (!team) {
-      throw new InternalServerErrorException('Internal Server error.');
-    }
+    if (!team) throw new NotFoundException('team not found.');
 
     this.team = team;
 
