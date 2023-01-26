@@ -1,7 +1,9 @@
+import { ITeam } from '../interfaces';
 import Team from '../database/models/Team';
 import { InternalServerErrorException } from '../exceptions';
+import { IModel } from './interfaces/IModel';
 
-class AuthSequelizeModel {
+class TeamSequelizeModel implements IModel<ITeam> {
   private teams = Object();
   private team = Object();
 
@@ -21,7 +23,7 @@ class AuthSequelizeModel {
     const team = await Team.findOne({ where: { id } });
 
     if (!team) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException('Internal Server error.');
     }
 
     this.team = team;
@@ -30,4 +32,4 @@ class AuthSequelizeModel {
   }
 }
 
-export default AuthSequelizeModel;
+export default TeamSequelizeModel;

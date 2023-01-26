@@ -1,12 +1,14 @@
 import { Router } from 'express';
 
-import TeamModel from '../models/TeamSequelizeModel';
+import TeamModelSequelize from '../models/TeamSequelizeModel';
+import TeamModel from '../models/TeamModel';
 import TeamService from '../services/TeamService';
 import TeamController from '../controllers/TeamController';
 
 const router: Router = Router();
 
-const teamModel = new TeamModel();
+const teamModelSequelize = new TeamModelSequelize();
+const teamModel = new TeamModel(teamModelSequelize);
 const teamService = new TeamService(teamModel);
 const teamController = new TeamController(teamService);
 

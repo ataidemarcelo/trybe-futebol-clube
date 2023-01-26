@@ -1,4 +1,4 @@
-import TeamModel from '../models/TeamSequelizeModel';
+import TeamModel from '../models/TeamModel';
 
 class TeamService {
   private model: TeamModel;
