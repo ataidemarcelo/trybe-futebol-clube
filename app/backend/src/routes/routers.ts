@@ -2,10 +2,12 @@ import { Router } from 'express';
 
 import authRouter from './auth.routes';
 import teamRouter from './team.routes';
+import matchRouter from './match.routes';
 
-const router = Router();
+const routers = Router();
 
-router.use('/login', authRouter);
-router.use('/teams', teamRouter);
+routers.use('/login', authRouter);
+routers.use('/teams', teamRouter);
+routers.use('/matches', matchRouter);
 
-export default router;
+export default routers;
