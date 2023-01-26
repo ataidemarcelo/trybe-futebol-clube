@@ -2,15 +2,27 @@ import { IMatch } from '../interfaces';
 import { IModel } from './interfaces/IModel';
 import { NotFoundException } from '../exceptions';
 
-class MatchModel implements IModel<IMatch> {
-  private _authModel: IModel<IMatch>;
+type MatchModelProps<T> = {
+  getAllInProgress(inProgress: boolean): Promise<T | null>
+} & IModel<T>;
 
-  constructor(authModel: IModel<IMatch>) {
-    this._authModel = authModel;
+class MatchModel implements IModel<IMatch> {
+  private _matcModel: MatchModelProps<IMatch>;
+
+  constructor(matcModel: MatchModelProps<IMatch>) {
+    this._matcModel = matcModel;
+  }
+
+  public async getAllInProgress(inProgress: boolean): Promise<IMatch> {
+    const matches = await this._matcModel.getAllInProgress(inProgress);
+
+    if (!matches) throw new NotFoundException('Matches in progress not found');
+
+    return matches;
   }
 
   public async getAll(): Promise<IMatch[]> {
-    const matches = await this._authModel.getAll();
+    const matches = await this._matcModel.getAll();
 
     if (!matches) throw new NotFoundException('Matches not found');
 
@@ -18,7 +30,7 @@ class MatchModel implements IModel<IMatch> {
   }
 
   public async getById(id: number): Promise<IMatch> {
-    const match = await this._authModel.getById(id);
+    const match = await this._matcModel.getById(id);
 
     if (!match) throw new NotFoundException('Matches not found');
 

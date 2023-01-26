@@ -12,6 +12,12 @@ class MatchService {
 
     return matches;
   }
+
+  public async getAllInProgress(inProgress: boolean) {
+    const matchesInProgress = await this.model.getAllInProgress(inProgress);
+
+    return matchesInProgress;
+  }
 }
 
 export default MatchService;

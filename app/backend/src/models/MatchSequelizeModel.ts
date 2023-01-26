@@ -9,6 +9,22 @@ class MatchSequelizeModel implements IModel<IMatch> {
   private matches = Object();
   private match = Object();
 
+  public async getAllInProgress(inProgress: boolean) {
+    const matches = await Match.findAll({
+      where: { inProgress },
+      include: [
+        { model: Team, as: 'homeTeam', attributes: { exclude: ['id'] } },
+        { model: Team, as: 'awayTeam', attributes: { exclude: ['id'] } },
+      ],
+    });
+
+    if (!matches) throw new NotFoundException('Matches not found.');
+
+    this.matches = matches;
+
+    return this.matches;
+  }
+
   public async getAll() {
     const matches = await Match.findAll({
       include: [
