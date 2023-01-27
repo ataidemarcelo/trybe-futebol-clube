@@ -15,9 +15,24 @@ const usersMock = [
   },
 ];
 
-// Mudar o password quando implementar o BcryptJS
 const validRequestData = { 
   email: 'admin@admin.com', 
-  password: 'secret_admin' };
+  password: 'secret_admin' 
+};
 
-export { usersMock, validRequestData };
+const validRequestUser = { 
+  email: 'user@user.com', 
+  password: 'secret_user' 
+};
+
+const validRequestAdmin = { 
+  email: 'user@user.com', 
+  password: 'secret_user' 
+};
+
+export { 
+  usersMock, 
+  validRequestData, 
+  validRequestUser,
+  validRequestAdmin,
+};
