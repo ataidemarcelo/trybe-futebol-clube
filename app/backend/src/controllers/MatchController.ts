@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 
+import { UnprocessableEntityException } from '../exceptions';
 import MatchService from '../services/MatchService';
 
 class MatchController {
@@ -25,6 +26,12 @@ class MatchController {
 
   public create = async (req: Request, res: Response) => {
     const { homeTeamId, awayTeamId, homeTeamGoals, awayTeamGoals } = req.body;
+
+    if (homeTeamId === awayTeamId) {
+      throw new UnprocessableEntityException(
+        'It is not possible to create a match with two equal teams',
+      );
+    }
 
     const matchData = {
       homeTeamId,
