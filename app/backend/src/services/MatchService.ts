@@ -25,6 +25,12 @@ class MatchService {
 
     return newMatch;
   }
+
+  public async finish(id: number) {
+    const result = await this.model.finish(id);
+
+    return result;
+  }
 }
 
 export default MatchService;

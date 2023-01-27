@@ -4,7 +4,8 @@ import { NotFoundException, InternalServerErrorException } from '../exceptions';
 
 type MatchModelProps<T> = {
   getAllInProgress(inProgress: boolean): Promise<T | null>;
-  create(matchData: NewMatchData): Promise<IMatch>
+  create(matchData: NewMatchData): Promise<IMatch>;
+  finish(id: number): Promise<number>;
 } & IModel<T>;
 
 class MatchModel implements IModel<IMatch> {
@@ -45,6 +46,14 @@ class MatchModel implements IModel<IMatch> {
     if (!newMatch) throw new InternalServerErrorException('Internal server error');
 
     return newMatch;
+  }
+
+  public async finish(id: number): Promise<number> {
+    const result = await this._matcModel.finish(id);
+
+    if (!result) throw new InternalServerErrorException('Internal server error');
+
+    return result;
   }
 }
 

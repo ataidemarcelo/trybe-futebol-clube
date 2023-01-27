@@ -44,6 +44,14 @@ class MatchController {
 
     res.status(201).json(newMatch);
   };
+
+  public finish = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    await this.service.finish(Number(id));
+
+    res.status(200).json({ message: 'Finished' });
+  };
 }
 
 export default MatchController;

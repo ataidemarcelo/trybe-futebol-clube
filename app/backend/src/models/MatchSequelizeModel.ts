@@ -3,12 +3,16 @@ import Team from '../database/models/Team';
 
 import { IMatch, NewMatchData } from '../interfaces';
 import { IModel } from './interfaces/IModel';
-import { InternalServerErrorException, NotFoundException } from '../exceptions';
+import {
+  InternalServerErrorException,
+  NotFoundException,
+  UnprocessableEntityException } from '../exceptions';
 
 class MatchSequelizeModel implements IModel<IMatch> {
   private matches = Object();
   private match = Object();
   private newMatch = Object();
+  private result = Object();
 
   public async getAllInProgress(inProgress: boolean) {
     const matches = await Match.findAll({
@@ -59,6 +63,16 @@ class MatchSequelizeModel implements IModel<IMatch> {
     this.newMatch = newMatch;
 
     return this.newMatch;
+  }
+
+  public async finish(id: number) {
+    const [result] = await Match.update({ inProgress: false }, { where: { id } });
+
+    if (!result) throw new UnprocessableEntityException('Already finished');
+
+    this.result = result;
+
+    return this.result;
   }
 }
 
