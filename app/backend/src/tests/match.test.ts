@@ -3,10 +3,12 @@ import * as sinon from 'sinon';
 // @ts-ignore
 import chaiHttp = require('chai-http');
 import { Response } from 'superagent';
+import { sign } from 'jsonwebtoken';
 
 import { app } from '../app';
 import Match from '../database/models/Match';
 import { matchMock, matchMockRequest, matchWithSameTeam } from './mock/match.mock';
+import { jwtSecret } from '../utils/jwt.config';
 
 chai.use(chaiHttp);
 
@@ -25,9 +27,12 @@ describe('"Match Controller" Integration Tests', () => {
         .stub(Match, "create")
         .resolves(matchMock as Match);
 
+      const token = sign({ sub: 'admin' }, jwtSecret.secret);
+
       response = await chai
          .request(app)
          .post('/matches')
+         .set('Authorization', token)
          .send(matchMockRequest);
       
       expect(response.status).to.be.equal(201);
@@ -39,9 +44,12 @@ describe('"Match Controller" Integration Tests', () => {
         .stub(Match, "create")
         .resolves(matchMock as Match);
 
+      const token = sign({ sub: 'admin' }, jwtSecret.secret);
+
       response = await chai
          .request(app)
          .post('/matches')
+         .set('Authorization', token)
          .send(matchWithSameTeam);
       
       expect(response.status).to.be.equal(422);
