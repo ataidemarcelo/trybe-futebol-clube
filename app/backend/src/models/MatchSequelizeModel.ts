@@ -1,13 +1,14 @@
 import Match from '../database/models/Match';
 import Team from '../database/models/Team';
 
-import { IMatch } from '../interfaces';
+import { IMatch, NewMatchData } from '../interfaces';
 import { IModel } from './interfaces/IModel';
-import { NotFoundException } from '../exceptions';
+import { InternalServerErrorException, NotFoundException } from '../exceptions';
 
 class MatchSequelizeModel implements IModel<IMatch> {
   private matches = Object();
   private match = Object();
+  private newMatch = Object();
 
   public async getAllInProgress(inProgress: boolean) {
     const matches = await Match.findAll({
@@ -48,6 +49,16 @@ class MatchSequelizeModel implements IModel<IMatch> {
     this.match = match;
 
     return this.match;
+  }
+
+  public async create(newMatchData: NewMatchData) {
+    const newMatch = await Match.create(newMatchData);
+
+    if (!newMatch) throw new InternalServerErrorException('Internal server error');
+
+    this.match = newMatch;
+
+    return this.newMatch;
   }
 }
 

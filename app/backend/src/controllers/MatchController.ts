@@ -22,6 +22,21 @@ class MatchController {
 
     res.status(200).json(matches);
   };
+
+  public create = async (req: Request, res: Response) => {
+    const { homeTeamId, awayTeamId, homeTeamGoals, awayTeamGoals } = req.body;
+
+    const matchData = {
+      homeTeamId,
+      awayTeamId,
+      homeTeamGoals,
+      awayTeamGoals,
+    };
+
+    const newMatch = await this.service.create(matchData);
+
+    res.status(201).json(newMatch);
+  };
 }
 
 export default MatchController;

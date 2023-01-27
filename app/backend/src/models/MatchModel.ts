@@ -1,9 +1,10 @@
-import { IMatch } from '../interfaces';
+import { IMatch, NewMatchData } from '../interfaces';
 import { IModel } from './interfaces/IModel';
-import { NotFoundException } from '../exceptions';
+import { NotFoundException, InternalServerErrorException } from '../exceptions';
 
 type MatchModelProps<T> = {
-  getAllInProgress(inProgress: boolean): Promise<T | null>
+  getAllInProgress(inProgress: boolean): Promise<T | null>;
+  create(matchData: NewMatchData): Promise<IMatch>
 } & IModel<T>;
 
 class MatchModel implements IModel<IMatch> {
@@ -32,9 +33,18 @@ class MatchModel implements IModel<IMatch> {
   public async getById(id: number): Promise<IMatch> {
     const match = await this._matcModel.getById(id);
 
-    if (!match) throw new NotFoundException('Matches not found');
+    if (!match) throw new NotFoundException('Match not found');
 
     return match;
+  }
+
+  public async create(matchData: NewMatchData): Promise<IMatch> {
+    const newMatchData = { ...matchData, inProgress: true };
+    const newMatch = await this._matcModel.create(newMatchData);
+
+    if (!newMatch) throw new InternalServerErrorException('Internal server error');
+
+    return newMatch;
   }
 }
 

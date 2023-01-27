@@ -1,20 +1,20 @@
-import Team from './ITeam';
-
-type TeamName = Omit<Team, 'id'>;
-
-interface IMatch {
-  id: number;
+type NewMatchData = {
   homeTeamId: number;
   homeTeamGoals: number;
   awayTeamId: number;
   awayTeamGoals: number;
-  inProgress: boolean;
+};
+
+interface IMatch extends NewMatchData {
+  id: number;
   homeTeam: {
-    teamName: TeamName;
+    teamName: string;
   },
   awayTeam: {
-    teamName: TeamName;
+    teamName: string;
   },
 }
 
-export default IMatch;
+export { NewMatchData, IMatch };
+
+// export default IMatch;

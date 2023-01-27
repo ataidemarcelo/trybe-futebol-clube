@@ -1,4 +1,5 @@
 import MatchModel from '../models/MatchModel';
+import { NewMatchData } from '../interfaces';
 
 class MatchService {
   private model: MatchModel;
@@ -17,6 +18,12 @@ class MatchService {
     const matchesInProgress = await this.model.getAllInProgress(inProgress);
 
     return matchesInProgress;
+  }
+
+  public async create(matchData: NewMatchData) {
+    const newMatch = await this.model.create(matchData);
+
+    return newMatch;
   }
 }
 

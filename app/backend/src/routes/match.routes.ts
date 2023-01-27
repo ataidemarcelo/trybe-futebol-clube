@@ -13,5 +13,6 @@ const matchService = new MatchService(matchModel);
 const matchController = new MatchController(matchService);
 
 router.get('/', matchController.getAll);
+router.post('/', matchController.create);
 
 export default router;
