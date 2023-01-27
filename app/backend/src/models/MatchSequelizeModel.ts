@@ -56,7 +56,7 @@ class MatchSequelizeModel implements IModel<IMatch> {
 
     if (!newMatch) throw new InternalServerErrorException('Internal server error');
 
-    this.match = newMatch;
+    this.newMatch = newMatch;
 
     return this.newMatch;
   }
