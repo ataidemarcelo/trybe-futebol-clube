@@ -1,12 +1,13 @@
 import Match from '../database/models/Match';
 import Team from '../database/models/Team';
 
-import { IMatch, NewMatchData } from '../interfaces';
 import { IModel } from './interfaces/IModel';
+import { IMatch, NewGameScoreboard, NewMatchData } from '../interfaces';
 import {
   InternalServerErrorException,
   NotFoundException,
-  UnprocessableEntityException } from '../exceptions';
+  UnprocessableEntityException,
+} from '../exceptions';
 
 class MatchSequelizeModel implements IModel<IMatch> {
   private matches = Object();
@@ -58,7 +59,7 @@ class MatchSequelizeModel implements IModel<IMatch> {
   public async create(newMatchData: NewMatchData) {
     const newMatch = await Match.create(newMatchData);
 
-    if (!newMatch) throw new InternalServerErrorException('Internal server error');
+    if (!newMatch) throw new InternalServerErrorException();
 
     this.newMatch = newMatch;
 
@@ -67,6 +68,17 @@ class MatchSequelizeModel implements IModel<IMatch> {
 
   public async finish(id: number) {
     const [result] = await Match.update({ inProgress: false }, { where: { id } });
+
+    if (!result) throw new UnprocessableEntityException('Already finished');
+
+    this.result = result;
+
+    return this.result;
+  }
+
+  public async update(id: number, newGameScoreboard: NewGameScoreboard) {
+    const { homeTeamGoals, awayTeamGoals } = newGameScoreboard;
+    const [result] = await Match.update({ homeTeamGoals, awayTeamGoals }, { where: { id } });
 
     if (!result) throw new UnprocessableEntityException('Already finished');
 

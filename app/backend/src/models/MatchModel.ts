@@ -1,11 +1,12 @@
-import { IMatch, NewMatchData } from '../interfaces';
 import { IModel } from './interfaces/IModel';
+import { IMatch, NewGameScoreboard, NewMatchData } from '../interfaces';
 import { NotFoundException, InternalServerErrorException } from '../exceptions';
 
 type MatchModelProps<T> = {
   getAllInProgress(inProgress: boolean): Promise<T | null>;
   create(matchData: NewMatchData): Promise<IMatch>;
   finish(id: number): Promise<number>;
+  update(id: number, newGameScoreboard: NewGameScoreboard): Promise<number>
 } & IModel<T>;
 
 class MatchModel implements IModel<IMatch> {
@@ -43,7 +44,7 @@ class MatchModel implements IModel<IMatch> {
     const newMatchData = { ...matchData, inProgress: true };
     const newMatch = await this._matcModel.create(newMatchData);
 
-    if (!newMatch) throw new InternalServerErrorException('Internal server error');
+    if (!newMatch) throw new InternalServerErrorException();
 
     return newMatch;
   }
@@ -51,7 +52,16 @@ class MatchModel implements IModel<IMatch> {
   public async finish(id: number): Promise<number> {
     const result = await this._matcModel.finish(id);
 
-    if (!result) throw new InternalServerErrorException('Internal server error');
+    if (!result) throw new InternalServerErrorException();
+
+    return result;
+  }
+
+  public async update(id: number, newGameScoreboard: NewGameScoreboard): Promise<number> {
+    const { homeTeamGoals, awayTeamGoals } = newGameScoreboard;
+    const result = await this._matcModel.update(id, { homeTeamGoals, awayTeamGoals });
+
+    if (!result) throw new InternalServerErrorException();
 
     return result;
   }

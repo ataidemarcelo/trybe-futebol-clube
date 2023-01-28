@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { UnprocessableEntityException } from '../exceptions';
 import MatchService from '../services/MatchService';
+import { UnprocessableEntityException } from '../exceptions';
 
 class MatchController {
   private service: MatchService;
@@ -51,6 +51,15 @@ class MatchController {
     await this.service.finish(Number(id));
 
     res.status(200).json({ message: 'Finished' });
+  };
+
+  public update = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { homeTeamGoals, awayTeamGoals } = req.body;
+
+    const result = await this.service.update(Number(id), { homeTeamGoals, awayTeamGoals });
+
+    res.status(200).json({ result, message: 'Updated' });
   };
 }
 

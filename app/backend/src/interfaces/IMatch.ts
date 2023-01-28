@@ -1,3 +1,5 @@
+type NewGameScoreboard = { homeTeamGoals: number, awayTeamGoals: number };
+
 type NewMatchData = {
   homeTeamId: number;
   homeTeamGoals: number;
@@ -15,6 +17,4 @@ interface IMatch extends NewMatchData {
   },
 }
 
-export { NewMatchData, IMatch };
-
-// export default IMatch;
+export { NewGameScoreboard, NewMatchData, IMatch };

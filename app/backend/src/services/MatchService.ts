@@ -1,7 +1,7 @@
 import Team from '../database/models/Team';
-
 import MatchModel from '../models/MatchModel';
-import { NewMatchData } from '../interfaces';
+
+import { NewGameScoreboard, NewMatchData } from '../interfaces';
 import { NotFoundException } from '../exceptions';
 
 class MatchService {
@@ -39,6 +39,13 @@ class MatchService {
 
   public async finish(id: number) {
     const result = await this.model.finish(id);
+
+    return result;
+  }
+
+  public async update(id: number, newGameScoreboard: NewGameScoreboard) {
+    const { homeTeamGoals, awayTeamGoals } = newGameScoreboard;
+    const result = await this.model.update(id, { homeTeamGoals, awayTeamGoals });
 
     return result;
   }
