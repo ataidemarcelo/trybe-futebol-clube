@@ -1,4 +1,4 @@
-interface ILeaderBoard {
+interface ILeaderBoardTeam {
   name: string;
   totalPoints: number;
   totalGames: number;
@@ -11,4 +11,8 @@ interface ILeaderBoard {
   efficiency: string;
 }
 
-export default ILeaderBoard;
+type ClassificationTeamObj = {
+  [key: string]: ILeaderBoardTeam
+};
+
+export { ILeaderBoardTeam, ClassificationTeamObj };

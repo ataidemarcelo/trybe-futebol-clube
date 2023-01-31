@@ -3,6 +3,8 @@ import { Router } from 'express';
 import Team from '../database/models/Team';
 import Matches from '../database/models/Match';
 
+import { IMatch, ClassificationTeamObj, ILeaderBoardTeam } from '../interfaces';
+
 const router: Router = Router();
 
 const getMatchResults = (type: string, homeTeamGoals: number, awayTeamGoals: number) => {
@@ -19,12 +21,13 @@ const getMatchResults = (type: string, homeTeamGoals: number, awayTeamGoals: num
   return { matchVitory, matchLoss, matchDraw };
 };
 
-const calculateTotals = (type: string, currentMatch: any, currentTeam: any) => {
+const calculateTotals = (
+  type: string,
+  currentMatch: IMatch,
+  currentTeam: ILeaderBoardTeam,
+) => {
   const team = currentTeam;
-  const {
-    homeTeamGoals,
-    awayTeamGoals,
-  } = currentMatch;
+  const { homeTeamGoals, awayTeamGoals } = currentMatch;
 
   const results = getMatchResults(type, homeTeamGoals, awayTeamGoals);
   const { matchVitory, matchLoss, matchDraw } = results;
@@ -44,7 +47,7 @@ const calculateTotals = (type: string, currentMatch: any, currentTeam: any) => {
   team.totalGames += 1;
 };
 
-const calculateGoals = (type: string, currentMatch: any, currentTeam: any) => {
+const calculateGoals = (type: string, currentMatch: IMatch, currentTeam: ILeaderBoardTeam) => {
   const match = currentMatch;
   const team = currentTeam;
   team.goalsOwn += type === 'homeTeam' ? match.awayTeamGoals : match.homeTeamGoals;
@@ -52,13 +55,17 @@ const calculateGoals = (type: string, currentMatch: any, currentTeam: any) => {
   team.goalsBalance = team.goalsFavor - team.goalsOwn;
 };
 
-const calculateEfficiency = (currentTeam: any) => {
+const calculateEfficiency = (currentTeam: ILeaderBoardTeam) => {
   const team = currentTeam;
   team.efficiency = ((team.totalPoints / (team.totalGames * 3)) * 100).toFixed(2);
 };
 
-const makeLeaderBoard = (classificationObject: any, matches: any, isHomeMatch: boolean) => {
-  matches.forEach((currentMatch: any) => {
+const makeLeaderBoard = (
+  classificationObject: ClassificationTeamObj,
+  matches: IMatch[],
+  isHomeMatch: boolean,
+) => {
+  matches.forEach((currentMatch: IMatch) => {
     // const isHomeMatch = true;
     const type = isHomeMatch ? 'homeTeam' : 'awayTeam';
     const homeTeamName = currentMatch[type].teamName;
@@ -76,15 +83,15 @@ const makeLeaderBoard = (classificationObject: any, matches: any, isHomeMatch: b
   return classificationObject;
 };
 
-const makeGeneralLeaderBoard = (classificationObject: any, matches: any) => {
+const makeGeneralLeaderBoard = (classificationObject: ClassificationTeamObj, matches: IMatch[]) => {
   const classificationHome = makeLeaderBoard(classificationObject, matches, true);
   const classificationOverall = makeLeaderBoard(classificationHome, matches, false);
   return classificationOverall;
 };
 
-const makeClassificationObject = (teamNameList: any) => {
-  const classObj: any = {};
-  teamNameList.forEach((teamName: any) => {
+const makeClassificationObject = (teamNameList: string[]) => {
+  const classObj: ClassificationTeamObj = {};
+  teamNameList.forEach((teamName: string) => {
     classObj[teamName] = {
       name: teamName,
       totalPoints: 0,
@@ -101,30 +108,36 @@ const makeClassificationObject = (teamNameList: any) => {
   return classObj;
 };
 
-const sortByTotalPoints = (a: any, b: any) => b.totalPoints - a.totalPoints;
+const sortByTotalPoints = (
+  a: ILeaderBoardTeam,
+  b: ILeaderBoardTeam,
+) => b.totalPoints - a.totalPoints;
 
-const sortByTotalVictories = (a: any, b: any) => {
+const sortByTotalVictories = (a: ILeaderBoardTeam, b: ILeaderBoardTeam) => {
   if (b.totalPoints === a.totalPoints) {
     return b.totalVictories - a.totalVictories;
   }
+  return 0;
 };
 
-const sortByGoalsBalance = (a: any, b: any) => {
+const sortByGoalsBalance = (a: ILeaderBoardTeam, b: ILeaderBoardTeam) => {
   if (b.totalPoints === a.totalPoints && b.totalVictories === a.totalVictories) {
     return b.goalsBalance - a.goalsBalance;
   }
+  return 0;
 };
 
-const sortByGoalsFavor = (a: any, b: any) => {
+const sortByGoalsFavor = (a: ILeaderBoardTeam, b: ILeaderBoardTeam) => {
   if (b.totalPoints === a.totalPoints
     && b.totalVictories === a.totalVictories
     && b.goalsBalance === a.goalsBalance
   ) {
     return b.goalsFavor - a.goalsFavor;
   }
+  return 0;
 };
 
-const sortByGoalsOwn = (a: any, b: any) => {
+const sortByGoalsOwn = (a: ILeaderBoardTeam, b: ILeaderBoardTeam) => {
   if (b.totalPoints === a.totalPoints
     && b.totalVictories === a.totalVictories
     && b.goalsBalance === a.goalsBalance
@@ -132,9 +145,10 @@ const sortByGoalsOwn = (a: any, b: any) => {
   ) {
     return b.goalsOwn - a.goalsOwn;
   }
+  return 0;
 };
 
-const sortBySortingRules = (board: any) =>
+const sortBySortingRules = (board: ILeaderBoardTeam[]) =>
   board
     .sort(sortByTotalPoints)
     .sort(sortByTotalVictories)
@@ -144,70 +158,72 @@ const sortBySortingRules = (board: any) =>
 
 router.get('/', async (_req, res) => {
   const teams = Object.values(await Team.findAll({
-    attributes: ['teamName'],
-    raw: true,
-  }));
+    attributes: ['teamName'], raw: true }));
 
   const teamNamesList = teams.map((team) => team.teamName);
-  const classificationObject: any = makeClassificationObject(teamNamesList);
+  const classificationObject = makeClassificationObject(teamNamesList);
 
   const matches = await Matches.findAll({
-    where: {
-      inProgress: false,
-    },
+    where: { inProgress: false },
     include: [
       { model: Team, as: 'homeTeam' },
       { model: Team, as: 'awayTeam' },
     ],
   });
-  const board: any = Object.values(makeGeneralLeaderBoard(classificationObject, matches));
+  const board = Object.values(makeGeneralLeaderBoard(
+    classificationObject,
+    matches as unknown as IMatch[],
+  ));
   const leaderBoard = sortBySortingRules(board);
   res.status(200).json(leaderBoard);
 });
 
 router.get('/away', async (_req, res) => {
   const teams = Object.values(await Team.findAll({
-    attributes: ['teamName'],
-    raw: true,
-  }));
+    attributes: ['teamName'], raw: true }));
 
   const teamNamesList = teams.map((team) => team.teamName);
-  const classificationObject: any = makeClassificationObject(teamNamesList);
+  const classificationObject = makeClassificationObject(teamNamesList);
 
   const matches = await Matches.findAll({
-    where: {
-      inProgress: false,
-    },
+    where: { inProgress: false },
     include: [
       { model: Team, as: 'homeTeam' },
       { model: Team, as: 'awayTeam' },
     ],
   });
-  const board: any = Object.values(makeLeaderBoard(classificationObject, matches, false));
+  const board = Object.values(makeLeaderBoard(
+    classificationObject,
+    matches as unknown as IMatch[],
+    false,
+  ));
   const leaderBoard = sortBySortingRules(board);
   res.status(200).json(leaderBoard);
 });
 
 router.get('/home', async (_req, res) => {
   const teams = Object.values(await Team.findAll({
-    attributes: ['teamName'],
-    raw: true,
-  }));
+    attributes: ['teamName'], raw: true }));
 
   const teamNamesList = teams.map((team) => team.teamName);
-  const classificationObj: any = makeClassificationObject(teamNamesList);
+  const classificationObj = makeClassificationObject(teamNamesList);
 
   const matches = await Matches.findAll({
-    where: {
-      inProgress: false,
-    },
+    where: { inProgress: false },
     include: [
       { model: Team, as: 'homeTeam', attributes: { exclude: ['id'] } },
       { model: Team, as: 'awayTeam', attributes: { exclude: ['id'] } },
     ],
   });
-  const board: any = Object.values(makeLeaderBoard(classificationObj, matches, true));
+
+  const board = Object.values(makeLeaderBoard(
+    classificationObj,
+    matches as unknown as IMatch[],
+    true,
+  ));
+
   const leaderBoard = sortBySortingRules(board);
+
   res.status(200).json(leaderBoard);
 });
 
