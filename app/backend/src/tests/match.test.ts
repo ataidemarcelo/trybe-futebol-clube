@@ -19,44 +19,42 @@ describe('"Match Controller" Integration Tests', () => {
 
   afterEach(() => sinon.restore());
 
-  // describe('POST /matches', () => {
-  //   it('should return status 201 and a new Match', async () => {  
-  //     sinon
-  //       .stub(Match, "create")
-  //       .resolves(matchMock as Match);
+  describe('POST /matches', () => {
+    it('should return status 201 and a new Match', async () => {  
+      sinon
+        .stub(Match, "create")
+        .resolves(matchMock as Match);
 
-  //     const token = sign({ sub: 'admin' }, jwtSecret.secret);
+      const token = sign({ sub: 'admin' }, jwtSecret.secret);
 
-  //     response = await chai
-  //        .request(app)
-  //        .post('/matches')
-  //        .set('Authorization', token)
-  //        .send(matchMockRequest);
+      response = await chai
+         .request(app)
+         .post('/matches')
+         .set('Authorization', token)
+         .send(matchMockRequest);
       
-  //     expect(response.status).to.be.equal(201);
-  //     expect(response.body).to.be.deep.equal(matchMock);
-  //     // sinon.restore();
-  //   });
+      expect(response.status).to.be.equal(201);
+      expect(response.body).to.be.deep.equal(matchMock);
+    });
 
-  //   it('should return status 422 and an error message', async () => {  
-  //     sinon
-  //       .stub(Match, "create")
-  //       .resolves(matchMock as Match);
+    it('should return status 422 and an error message', async () => {  
+      sinon
+        .stub(Match, "create")
+        .resolves(matchMock as Match);
 
-  //     const token = sign({ sub: 'admin' }, jwtSecret.secret);
+      const token = sign({ sub: 'admin' }, jwtSecret.secret);
 
-  //     response = await chai
-  //        .request(app)
-  //        .post('/matches')
-  //        .set('Authorization', token)
-  //        .send(matchWithSameTeam);
+      response = await chai
+         .request(app)
+         .post('/matches')
+         .set('Authorization', token)
+         .send(matchWithSameTeam);
       
-  //     expect(response.status).to.be.equal(422);
-  //     expect(response.body).to.be.deep.equal({ 
-  //       message: 'It is not possible to create a match with two equal teams' });
-  //     // sinon.restore();
-  //   });
-  // });
+      expect(response.status).to.be.equal(422);
+      expect(response.body).to.be.deep.equal({ 
+        message: 'It is not possible to create a match with two equal teams' });
+    });
+  });
 
   describe('PATCH /matches/:id', () => {
     it('should return status 200', async () => {  
@@ -74,7 +72,6 @@ describe('"Match Controller" Integration Tests', () => {
       
       expect(response.status).to.be.equal(200);
       expect(response.body).to.be.deep.equal({ result: 1, message: 'Updated' });
-      // sinon.restore();
     });
   });
 });
